@@ -86,7 +86,9 @@ class Board extends Component {
 								w--;
 							}
 							else {
+								// take care of the case where it's a number, press it so the player does not need to
 								tempCleared.push(w - 1 + this.props.size[0] * row);
+								break;
 							}
 							
 						}
@@ -94,6 +96,7 @@ class Board extends Component {
 							break;
 						}
 					}
+					// do the same but to the right
 					while(e < this.props.size[0] - 1) {
 						if(!tempCleared.includes(e + 1 + this.props.size[0]* row)) {
 							if(this.state.cells[e + 1 + this.props.size[0]* row] === 0) {
@@ -103,12 +106,12 @@ class Board extends Component {
 								// take care of the case where it's a number, press it so the player does not need to
 								tempCleared.push(e + 1 + this.props.size[0] * row);
 							}
-							
 						}
 						else {
 							break;
 						}
 					}
+					// Part two of the flood fill algorithm: Maybe I should have used the recursive version
 					for(let i = w; i <= e; i++) {
 						tempCleared.push(i + this.props.size[0] * row);
 						if(row !== 0) {
@@ -125,6 +128,43 @@ class Board extends Component {
 									queue.push(i + this.props.size[0] * (row + 1));
 								}
 								tempCleared.push(i + this.props.size[0] * (row + 1));
+							}
+						}
+					}
+					// deal with specific corner cases
+					if(w > 0) {
+						if(row !== 0) {
+							if(!tempCleared.includes(w - 1 + this.props.size[0] * (row - 1))) {
+								tempCleared.push(w - 1 + this.props.size[0] * (row - 1));
+								if(this.state.cells[w - 1 + this.props.size[0] * (row - 1)] === 0) {
+									queue.push(w - 1 + this.props.size[0] * (row - 1));
+								}								
+							}
+						}
+						if(row !== this.props.size[1] - 1) {
+							if(!tempCleared.includes(w - 1 + this.props.size[0] * (row + 1))) {
+								tempCleared.push(w - 1 + this.props.size[0] * (row + 1));
+								if(this.state.cells[w - 1 + this.props.size[0] * (row + 1)] === 0) {
+									queue.push(w - 1 + this.props.size[0] * (row + 1));
+								}								
+							}
+						}
+					}
+					if(e < this.props.size[0] - 1) {
+						if(row !== 0) {
+							if(!tempCleared.includes(e + 1 + this.props.size[0] * (row - 1))) {
+								tempCleared.push(e + 1 + this.props.size[0] * (row - 1));
+								if(this.state.cells[e + 1 + this.props.size[0] * (row - 1)] === 0) {
+									queue.push(e + 1 + this.props.size[0] * (row - 1));
+								}								
+							}
+						}
+						if(row !== this.props.size[1] - 1) {
+							if(!tempCleared.includes(e + 1 + this.props.size[0] * (row + 1))) {
+								tempCleared.push(e + 1 + this.props.size[0] * (row + 1));
+								if(this.state.cells[e + 1 + this.props.size[0] * (row + 1)] === 0) {
+									queue.push(e + 1 + this.props.size[0] * (row + 1));
+								}								
 							}
 						}
 					}
