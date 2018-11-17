@@ -9,7 +9,7 @@ class Cell extends Component {
 	render() {
 		return (
 			<button className="cell" onClick={this.props.cellClicked}>
-			{this.props.text}
+			{this.props.enabled ? this.props.text : '_'}
 			</button>
 		);
 	}

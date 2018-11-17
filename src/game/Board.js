@@ -11,6 +11,7 @@ class Board extends Component {
 		};
 		this.cellClicked = this.cellClicked.bind(this);
 		this.getAdjacentCells = this.getAdjacentCells.bind(this);
+		this.createTable = this.createTable.bind(this);
 	}
 
 	/**
@@ -18,19 +19,25 @@ class Board extends Component {
 	 */
 	componentDidMount() {
 		let mines = [];
+		let tempCells = [];
 		for(let i = 0; i < this.props.size[0] * this.props.size[1]; i++) {
 			mines.push(i);
+			tempCells.push(0);
 		}
 		shuffle(mines);
 		mines = mines.slice(0, this.props.mines);
-		let tempCells = [];
-		tempCells.fill(0, 0, this.props.size[0] * this.props.size[1]);
-		
-		mines.map((cell) => {
-			tempCells[cell] = 'M';
+		mines.map((mine) => {
+			tempCells[mine] = 'M';
+			this.getAdjacentCells(mine).map((cellIndex) => {
+				if(tempCells[cellIndex] !== 'M') {
+					tempCells[cellIndex]++;
+				}
+			});
 		});
-			
 
+		this.setState({
+			cells: tempCells
+		});
 
 		/**
 		 * Shuffles array using Fischer-Yates
@@ -105,15 +112,19 @@ class Board extends Component {
 					for(let i = w; i <= e; i++) {
 						tempCleared.push(i + this.props.size[0] * row);
 						if(row !== 0) {
-							if(!tempCleared.includes(i + this.props.size[0] * (row - 1)) && this.state.cells[i + this.props.size[0] * (row - 1)] === 0) {
+							if(!tempCleared.includes(i + this.props.size[0] * (row - 1))) {
 								tempCleared.push(i + this.props.size[0] * (row - 1));
-								queue.push(i + this.props.size[0] * (row - 1));
+								if(this.state.cells[i + this.props.size[0] * (row - 1)] === 0) {
+									queue.push(i + this.props.size[0] * (row - 1));
+								}								
 							}
 						}
 						if(row !== this.props.size[1] - 1) {
-							if(!tempCleared.includes(i + this.props.size[0] * (row + 1)) && this.state.cells[i + this.props.size[0] * (row + 1)] === 0) {
+							if(!tempCleared.includes(i + this.props.size[0] * (row + 1))) {
+								if(this.state.cells[i + this.props.size[0] * (row + 1)] === 0) {
+									queue.push(i + this.props.size[0] * (row + 1));
+								}
 								tempCleared.push(i + this.props.size[0] * (row + 1));
-								queue.push(i + this.props.size[0] * (row + 1));
 							}
 						}
 					}
@@ -137,27 +148,37 @@ class Board extends Component {
 		const column = index % this.props.size[0];
 		const row = Math.floor(index / this.props.size[0]);
 		// check all acceptable columns
-		for(let i = Math.max(-1, column-1); i <= Math.min(this.props.size[0], column+1); i++) {			
-			for(let j = Math.max(-1, row-1); j <= Math.min(this.props.size[1], row+1); j++) {
+		for(let i = Math.max(0, column-1); i <= Math.min(this.props.size[0] - 1, column+1); i++) {			
+			for(let j = Math.max(0, row-1); j <= Math.min(this.props.size[1] - 1, row+1); j++) {
 				if(i !== column || j !== row) {
 					arr.push( i + (this.props.size[0] * j));
 				}
 			}
 		}
-		alert(arr.length);
 		return arr;
+	}
+
+	createTable() {
+		const table = [];
+		for(let i = 0; i < this.props.size[1]; i++) {
+			const child = [];
+			for(let j = 0; j < this.props.size[0]; j++) {
+				child.push(<td><Cell enabled={this.state.cleared.includes(i * this.props.size[0] + j)}
+				text={this.state.cells[i * this.props.size[0] + j]}
+				cellClicked={() => this.cellClicked(i * this.props.size[0] + j)}
+				key={i * this.props.size[0] + j} /></td>);
+			}
+			table.push(<tr>{child}</tr>);
+		}
+		return table;
 	}
 
 	render() {
 		return(
-			<div className = 'minefield'>
-			{this.state.cells.map((cell, index) => (
-				<Cell enabled={this.state.cleared.includes(index)}
-					text={cell}
-					cellClicked={this.cellClicked}
-					key={index} />
-				
-			))}
+			<div>
+			<table className = 'grid'>
+			{this.createTable()}			
+			</table>
 			</div>
 		);
 	}
