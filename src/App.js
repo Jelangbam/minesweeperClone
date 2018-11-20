@@ -1,12 +1,20 @@
 import React, { Component } from 'react';
 import 'normalize.css';
 import './App.css';
-import Board from './game/Board';
+import Minesweeper from './game/Minesweeper';
 class App extends Component {
+	constructor() {
+		super();
+		this.state = {
+			width: 16,
+			length: 16,
+			mines: 40
+		};
+	}
 	render() {
 		return (
 			<div className="App">
-				<Board size={[10,10]} mines={10}/>
+				<Minesweeper size={[this.state.width, this.state.length]} mines={this.state.mines}/>
 			</div>
 		);
 	}
