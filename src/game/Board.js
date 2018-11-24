@@ -36,14 +36,14 @@ class Board extends Component {
 		}
 		shuffle(mines);
 		mines = mines.slice(0, this.props.mines);
-		mines.map((mine) => {
+		for(const mine of mines) {
 			tempCells[mine] = 'M';
-			this.getAdjacentCells(mine).map((cellIndex) => {
+			for(const cellIndex of this.getAdjacentCells(mine)) {
 				if(tempCells[cellIndex] !== 'M') {
 					tempCells[cellIndex]++;
 				}
-			});
-		});
+			}
+		}
 		return tempCells; // required because setState is async
 		/**
 		 * Shuffles array using Fischer-Yates
