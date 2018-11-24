@@ -7,10 +7,18 @@ class Minesweeper extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			timer: 0
+			timer: 0,
+			status: false
 		};
+		this.setLost = this.setLost.bind(this);
 		this.startTimer = this.startTimer.bind(this);
 		this.stopTimer = this.stopTimer.bind(this);
+	}
+
+	setLost(bool) {
+		this.setState({
+			status: bool
+		});
 	}
 
 	startTimer() {
@@ -36,10 +44,14 @@ class Minesweeper extends Component {
 		return(
 			<div>
 				<div className='Board'>
-					<Board size={this.props.size} mines={this.props.mines} />
+					<Board setLost={this.setLost} 
+						size={this.props.size} 
+						mines={this.props.mines} 
+						startTimer = {this.startTimer}
+						stopTimer = {this.stopTimer}/>
 				</div>
 				<div className='Statusbar'>
-					<Status status={false}	timer={this.state.timer} />
+					<Status status={this.state.status}	timer={this.state.timer} />
 				</div>
 			</div>			
 		);
