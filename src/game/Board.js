@@ -32,7 +32,7 @@ class Board extends Component {
 			if(i !== index) {
 				mines.push(i);
 			}			
-			tempCells.push(0);
+			tempCells.push('0');
 		}
 		shuffle(mines);
 		mines = mines.slice(0, this.props.mines);
@@ -40,7 +40,7 @@ class Board extends Component {
 			tempCells[mine] = 'M';
 			for(const cellIndex of this.getAdjacentCells(mine)) {
 				if(tempCells[cellIndex] !== 'M') {
-					tempCells[cellIndex]++;
+					tempCells[cellIndex] = String(parseInt(tempCells[cellIndex]) + 1);
 				}
 			}
 		}
@@ -64,7 +64,7 @@ class Board extends Component {
 	resetBoard() {
 		const tempCells = [];
 		for(let i = 0; i < this.props.size[0] * this.props.size[1]; i++) {
-			tempCells.push(0);
+			tempCells.push('0');
 		}
 		this.setState({
 			cells: tempCells,
@@ -97,7 +97,7 @@ class Board extends Component {
 				this.props.stopTimer();
 				return;
 			}
-			if(cells[index] === 0) {
+			if(cells[index] === '0') {
 				// implementation of the flood fill algorithm if you click a square with no adjecent mines
 				const queue = [index];
 				while(queue.length > 0) {
@@ -108,7 +108,7 @@ class Board extends Component {
 					// go left until we find something that does not fit the conditions: button is not pushed down and has 0 adjecent mines 
 					while(w > 0) {
 						if(!tempCleared.includes(w - 1 + this.props.size[0]* row)) {
-							if(cells[w - 1 + this.props.size[0]* row] === 0) {
+							if(cells[w - 1 + this.props.size[0]* row] === '0') {
 								w--;
 							}
 							else {
@@ -127,7 +127,7 @@ class Board extends Component {
 					// do the same but to the right
 					while(e < this.props.size[0] - 1) {
 						if(!tempCleared.includes(e + 1 + this.props.size[0]* row)) {
-							if(cells[e + 1 + this.props.size[0]* row] === 0) {
+							if(cells[e + 1 + this.props.size[0]* row] === '0') {
 								e++;
 							}
 							else {
@@ -149,14 +149,14 @@ class Board extends Component {
 						if(row !== 0) {
 							if(!tempCleared.includes(i + this.props.size[0] * (row - 1))) {
 								tempCleared.push(i + this.props.size[0] * (row - 1));
-								if(cells[i + this.props.size[0] * (row - 1)] === 0) {
+								if(cells[i + this.props.size[0] * (row - 1)] === '0') {
 									queue.push(i + this.props.size[0] * (row - 1));
 								}								
 							}
 						}
 						if(row !== this.props.size[1] - 1) {
 							if(!tempCleared.includes(i + this.props.size[0] * (row + 1))) {
-								if(cells[i + this.props.size[0] * (row + 1)] === 0) {
+								if(cells[i + this.props.size[0] * (row + 1)] === '0') {
 									queue.push(i + this.props.size[0] * (row + 1));
 								}
 								tempCleared.push(i + this.props.size[0] * (row + 1));
@@ -168,7 +168,7 @@ class Board extends Component {
 						if(row !== 0) {
 							if(!tempCleared.includes(w - 1 + this.props.size[0] * (row - 1))) {
 								tempCleared.push(w - 1 + this.props.size[0] * (row - 1));
-								if(cells[w - 1 + this.props.size[0] * (row - 1)] === 0) {
+								if(cells[w - 1 + this.props.size[0] * (row - 1)] === '0') {
 									queue.push(w - 1 + this.props.size[0] * (row - 1));
 								}								
 							}
@@ -176,7 +176,7 @@ class Board extends Component {
 						if(row !== this.props.size[1] - 1) {
 							if(!tempCleared.includes(w - 1 + this.props.size[0] * (row + 1))) {
 								tempCleared.push(w - 1 + this.props.size[0] * (row + 1));
-								if(cells[w - 1 + this.props.size[0] * (row + 1)] === 0) {
+								if(cells[w - 1 + this.props.size[0] * (row + 1)] === '0') {
 									queue.push(w - 1 + this.props.size[0] * (row + 1));
 								}								
 							}
@@ -186,7 +186,7 @@ class Board extends Component {
 						if(row !== 0) {
 							if(!tempCleared.includes(e + 1 + this.props.size[0] * (row - 1))) {
 								tempCleared.push(e + 1 + this.props.size[0] * (row - 1));
-								if(cells[e + 1 + this.props.size[0] * (row - 1)] === 0) {
+								if(cells[e + 1 + this.props.size[0] * (row - 1)] === '0') {
 									queue.push(e + 1 + this.props.size[0] * (row - 1));
 								}								
 							}
@@ -194,7 +194,7 @@ class Board extends Component {
 						if(row !== this.props.size[1] - 1) {
 							if(!tempCleared.includes(e + 1 + this.props.size[0] * (row + 1))) {
 								tempCleared.push(e + 1 + this.props.size[0] * (row + 1));
-								if(cells[e + 1 + this.props.size[0] * (row + 1)] === 0) {
+								if(cells[e + 1 + this.props.size[0] * (row + 1)] === '0') {
 									queue.push(e + 1 + this.props.size[0] * (row + 1));
 								}								
 							}
@@ -208,7 +208,6 @@ class Board extends Component {
 			this.setState({
 				cleared: tempCleared
 			});
-			console.log(tempCleared.length);
 			// handle winning
 			if(tempCleared.length === (cells.length - this.props.mines) && !this.state.status) {
 				this.props.stopTimer();
@@ -241,12 +240,12 @@ class Board extends Component {
 		for(let i = 0; i < this.props.size[1]; i++) {
 			const child = [];
 			for(let j = 0; j < this.props.size[0]; j++) {
-				child.push(<td><Cell enabled={this.state.cleared.includes(i * this.props.size[0] + j)}
+				child.push(<td key={i * this.props.size[0] + j}><Cell enabled={this.state.cleared.includes(i * this.props.size[0] + j)}
 				text={this.state.cells[i * this.props.size[0] + j]}
 				cellClicked={() => this.cellClicked(i * this.props.size[0] + j)}
-				key={i * this.props.size[0] + j} /></td>);
+				/></td>);
 			}
-			table.push(<tr>{child}</tr>);
+			table.push(<tr key={i}>{child}</tr>);
 		}
 		return table;
 	}
@@ -254,8 +253,10 @@ class Board extends Component {
 	render() {
 		return(
 			<div>
-			<table className = 'grid'>
-			{this.createTable()}			
+			<table className = 'grid' key={'grid'}>
+			<tbody>
+			{this.createTable()}	
+			</tbody>		
 			</table>
 			</div>
 		);
@@ -265,7 +266,7 @@ class Board extends Component {
 Board.propTypes = {
 	size: PropTypes.arrayOf(PropTypes.number), // [width, length]
 	mines: PropTypes.number, // number of mines
-	setLost: PropTypes.setLost, // did the player lose?
+	setLost: PropTypes.func, // did the player lose?
 	startTimer: PropTypes.func,
 	stopTimer: PropTypes.func
 };

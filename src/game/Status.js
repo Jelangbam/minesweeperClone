@@ -13,7 +13,7 @@ class Status extends Component {
 }
 
 Status.propTypes = {
-	status: PropTypes.boolean,
+	status: PropTypes.bool,
 	timer: PropTypes.number	
 };
 
